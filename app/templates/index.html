@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js')}}"></script>
+    </head>
+    <body>
+        <div id="map"></div>  
+        <button onclick='drawLine()'>GO</button>
+        <button onclick='sendData()'>SOLVE</button>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBON6aGMLvVDk2GCBCM7AYGwfNti7fQVTs&callback=initMap"></script>
+  </body>
+</html>
