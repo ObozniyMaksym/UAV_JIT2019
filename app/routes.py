@@ -11,6 +11,7 @@ lx = 100
 ly = 100
 points = []
 a = []
+cur_ans = 0
 ans_points = []
 all_points = []
 
@@ -91,6 +92,8 @@ def f_optimal(all_points):
 def gen_pos():
     p1 = randint(0, len(all_points) - 1)
     p2 = randint(0, len(all_points) - 1)
+    if p1 > p2:
+        p1, p2 = p2, p1
     b = []
     for i in range(0, p1):
         b.append(all_points[i])
@@ -106,15 +109,43 @@ def gen_pos():
 #Solving TSP
 def solve_TSP():
     global all_points
+    #print(len(all_points))
     shuffle(all_points)
+    cur_ans = f_optimal(all_points)
     t1 = 200 
     t2 = 0.00001
     while t1 > t2:
-        newPoints = gen_pos()
-        opt = f_optimal(all_points) - f_optimal(newPoints)
-        if opt > 0 and random() < exp(opt / t1):
-            all_points = newPoints.copy()
-        t1 *= 0.9998
+        #print(t1)
+        p1 = randint(0, len(all_points) - 1)
+        p2 = randint(0, len(all_points) - 1)
+        if p1 > p2:
+            p1, p2 = p2, p1
+        newVal = cur_ans
+        if p1 == 0:
+            if p2 == len(all_points) - 1:
+                newVal = cur_ans
+            else:
+                newVal = cur_ans - get_dist(all_points[p2], all_points[p2 + 1]) + get_dist(all_points[p1], all_points[p2 + 1])
+        else:
+            if p2 == len(all_points) - 1:
+                newVal = cur_ans - get_dist(all_points[p1 - 1], all_points[p1]) + get_dist(all_points[p2], all_points[p1 - 1])
+            else:
+                newVal = cur_ans - get_dist(all_points[p1 - 1], all_points[p1]) + get_dist(all_points[p2], all_points[p1 - 1]) - get_dist(all_points[p2], all_points[p2 + 1]) + get_dist(all_points[p1], all_points[p2 + 1])
+            
+        #print(len(newPoints))
+        opt = cur_ans - newVal
+        if opt > 0 or random() < exp(min(opt / t1, 1)):
+            cur_ans = newVal
+            b = []
+            for i in range(0, p1):
+                b.append(all_points[i])
+            for i in range(p1, p2 + 1):
+                b.append(all_points[p2 - i + p1])
+            for i in range(p2 + 1, len(all_points)):
+                b.append(all_points[i])
+            all_points = b.copy()
+        #print(2)
+        t1 *= 0.99998
     
 
 
@@ -125,10 +156,11 @@ def solve_TSP():
 def solve():
     global all_points
     all_points.clear()
-    for i in range(-50, 51):
-        for j in range(-50, 51):
+    for i in range(-20, 21):
+        for j in range(-20, 21):
             if good_square(i * lx, j * ly) == 1:
                 all_points.append({"x": i * lx + lx / 2, "y" : j * ly + ly / 2})
+    print(1)
     solve_TSP()
     print(a)
     print(all_points)
@@ -167,12 +199,12 @@ def send():
     goo = 1
     global points
     points = request.get_json()
-    print(points)
+    #print(points)
     get_distance()
     solve()
     go_to_ok()
     global ans_points
-    print(ans_points)
+    #print(ans_points)
     return jsonify(ans_points)
 
 @app.route('/')
