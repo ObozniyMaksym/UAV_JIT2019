@@ -5,9 +5,21 @@
         <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js')}}"></script>
     </head>
     <body>
-        <div id="map"></div>  
-        <button onclick='drawLine()'>GO</button>
-        <button onclick='sendData()'>SOLVE</button>
+        <div id = "panel">Проектирование полета дрона, для покрытия территории</div>
+        <div id="map"></div>
+        <div id = "buttons">
+            <button onClick='sendInfo()'>SEND NUDES</button>
+            <button onClick='sendData()'>SOLVE</button>
+            <button onClick='clearAll()'>CLEAR BORDER</button>
+            <button onClick='clearShit()'>CLEAR ALL</button>
+        </div>
+        <div is = "inputs">
+            <input type = "number" id = "angle" placeholder = "Enter the angle of view"/>
+            <input type = "number" id = "height" placeholder = "Enter the height"/>
+            <input type = "number" id = "ratio" placeholder = "Enter the aspect ratio"/>
+            <input type = "number" id = "overlapping" placeholder = "Enter the overlapping ratio"/>
+            
+        </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBON6aGMLvVDk2GCBCM7AYGwfNti7fQVTs&callback=initMap"></script>
   </body>

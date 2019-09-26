@@ -1,10 +1,12 @@
 from app import app
 import sys
 from flask import jsonify, render_template, request, Response
-from math import cos, sqrt, exp
+from math import cos, sqrt, exp, tan
 from random import random, randint, shuffle
 import json
 
+base = {"lat": 0, "lng": 0}
+zero = {"x": 0, "y": 0}
 dpx = 1
 dpy = 1
 lx = 100
@@ -25,16 +27,21 @@ def get_dist(a, b):
 def get_square(a, b, c):
     return (a["x"] - b["x"]) * (a["y"] + b["y"]) + (b["x"] - c["x"]) * (b["y"] + c["y"]) + (c["x"] - a["x"]) * (c["y"] + a["y"])
 
-#Transformation from lat/lng to cartesian coordinates
-def get_distance():
-    a.clear()
-    phi = points[0]["lat"] / 180 * 3.1415926
+#Get dpx and dpy
+def get_dps(location):
+    global base
+    base = location
+    phi = base["lat"] / 180 * 3.1415926
     global dpx, dpy
     dpx = 111.321*cos(phi) - 0.0094*cos(3*phi)
     dpy = 111.143
-    a.append({"x": 0, "y": 0, "id": 0})
-    for i in range(1, len(points)):
-        a.append({"x": (points[i]["lng"] - points[0]["lng"])*dpx*1000, "y": (points[i]["lat"] - points[0]["lat"])*dpy*1000, "id": i})
+
+#Transformation from lat/lng to cartesian coordinates
+def get_distance():
+    global a
+    a.clear()
+    for i in range(0, len(points)):
+        a.append({"x": (points[i]["lng"] - base["lng"])*dpx*1000, "y": (points[i]["lat"] - base["lat"])*dpy*1000, "id": i})
 
 #Check do the segments intersect
 def intersection(a, b, c, d):
@@ -85,7 +92,8 @@ def f_optimal(all_points):
     dist = 0
     for i in range(0, len(all_points) - 1):
         dist = dist + get_dist(all_points[i], all_points[i + 1])
-    dist = dist + get_dist(all_points[0], all_points[-1])
+    #dist = dist + get_dist(all_points[0], all_points[-1])
+    dist = dist + get_dist(zero, all_points[0]) + get_dist(all_points[-1], zero)
     return dist
 
 #Generation of the new state
@@ -125,10 +133,10 @@ def solve_TSP():
             if p2 == len(all_points) - 1:
                 newVal = cur_ans
             else:
-                newVal = cur_ans - get_dist(all_points[p2], all_points[p2 + 1]) + get_dist(all_points[p1], all_points[p2 + 1])
+                newVal = cur_ans - get_dist(all_points[p2], all_points[p2 + 1]) + get_dist(all_points[p1], all_points[p2 + 1]) - get_dist(zero, all_points[p1]) + get_dist(zero, all_points[p2])
         else:
             if p2 == len(all_points) - 1:
-                newVal = cur_ans - get_dist(all_points[p1 - 1], all_points[p1]) + get_dist(all_points[p2], all_points[p1 - 1])
+                newVal = cur_ans - get_dist(all_points[p1 - 1], all_points[p1]) + get_dist(all_points[p2], all_points[p1 - 1]) - get_dist(zero, all_points[p2]) + get_dist(zero, all_points[p1])
             else:
                 newVal = cur_ans - get_dist(all_points[p1 - 1], all_points[p1]) + get_dist(all_points[p2], all_points[p1 - 1]) - get_dist(all_points[p2], all_points[p2 + 1]) + get_dist(all_points[p1], all_points[p2 + 1])
             
@@ -156,14 +164,30 @@ def solve_TSP():
 def solve():
     global all_points
     all_points.clear()
-    for i in range(-20, 21):
-        for j in range(-20, 21):
+    minx = 0
+    miny = 0
+    maxx = 0
+    maxy = 0
+    for point in a:
+        minx = min(minx, point["x"])
+        miny = min(miny, point["y"])
+        maxx = max(maxx, point["x"])
+        maxy = max(maxy, point["y"])
+    k_up = int(max(0, maxy // ly + 1))
+    k_down = int(max(0, -miny // ly + 1))
+    k_left = int(max(0, -minx // lx + 1))
+    k_right = int(max(0, maxx // lx + 1))
+    print(k_up, k_down)
+    if (k_up + k_down)*(k_left + k_right) > 50 * 50:
+        return;
+    for i in range(-k_left - 1, k_right + 1):
+        for j in range(-k_down - 1, k_up + 1):
             if good_square(i * lx, j * ly) == 1:
                 all_points.append({"x": i * lx + lx / 2, "y" : j * ly + ly / 2})
-    print(1)
+    print(all_points)
     solve_TSP()
     print(a)
-    print(all_points)
+    #print(all_points)
     
 @app.route('/sort', methods = ['POST'])
 def sort():
@@ -189,23 +213,50 @@ def sort():
 def go_to_ok():
     global ans_points
     ans_points.clear()
+    print(base)
     for i in range(0, len(all_points)):
-        ans_points.append({"lat": all_points[i]["y"] / 1000 / dpy + points[0]["lat"], "lng": all_points[i]["x"] / 1000 / dpx + points[0]["lng"]})
+        ans_points.append({"lat": all_points[i]["y"] / 1000 / dpy + base["lat"], "lng": all_points[i]["x"] / 1000 / dpx + base["lng"]})
     return 0
 
+
+@app.route('/sendHomePosition', methods = ['POST'])
+def makeHome():
+    location = request.get_json()
+    get_dps(location)
+    return jsonify(location)
 
 @app.route('/send', methods = ['POST'])
 def send():
     goo = 1
     global points
     points = request.get_json()
-    #print(points)
+    print(points)
     get_distance()
-    solve()
+    global a
+    print(a)
+    solve() 
+    all_points.insert(0, zero)
+    all_points.append(zero)
     go_to_ok()
     global ans_points
     #print(ans_points)
     return jsonify(ans_points)
+
+@app.route('/sendInfo', methods = ['POST'])
+def sendInfo():
+    val = request.get_json()
+    angle = val[0]
+    height = val[1]
+    ratio = val[2]
+    ov_ratio = val[3];
+    global lx, ly
+    lx = (2 * height * tan(angle / 360 * 3.1415926))
+    ly = lx / ratio
+    lx *= (1 - ov_ratio)
+    ly *= (1 - ov_ratio)
+    print(lx, ly)
+    return jsonify(lx)
+    print(1, lx, ly)
 
 @app.route('/')
 @app.route('/index')
