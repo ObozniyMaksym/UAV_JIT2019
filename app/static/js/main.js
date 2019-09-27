@@ -23,7 +23,7 @@ function clearAll() {
 function clearShit() {
     clearAll();
     HomeMarker.setMap(null);
-    state = 0;
+    state = 1;
 }
 
 function max(a, b) {

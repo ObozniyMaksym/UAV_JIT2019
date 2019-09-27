@@ -4,7 +4,11 @@ from flask import jsonify, render_template, request, Response
 from math import cos, sqrt, exp, tan
 from random import random, randint, shuffle
 import json
+from app.model import DroneAlgo
 
+main = DroneAlgo()
+
+'''
 base = {"lat": 0, "lng": 0}
 zero = {"x": 0, "y": 0}
 dpx = 1
@@ -217,30 +221,26 @@ def go_to_ok():
     for i in range(0, len(all_points)):
         ans_points.append({"lat": all_points[i]["y"] / 1000 / dpy + base["lat"], "lng": all_points[i]["x"] / 1000 / dpx + base["lng"]})
     return 0
-
+'''
 
 @app.route('/sendHomePosition', methods = ['POST'])
 def makeHome():
     location = request.get_json()
-    get_dps(location)
+    main.get_dps(location)
+    print(main.dpx, main.dpy)
     return jsonify(location)
 
 @app.route('/send', methods = ['POST'])
 def send():
-    goo = 1
-    global points
-    points = request.get_json()
-    print(points)
-    get_distance()
-    global a
-    print(a)
-    solve() 
-    all_points.insert(0, zero)
-    all_points.append(zero)
-    go_to_ok()
-    global ans_points
-    #print(ans_points)
-    return jsonify(ans_points)
+    main.points = request.get_json()
+    print(main.points)
+    main.get_distance()
+    main.solve() 
+    
+    print(main.a, main.dpx, main.dpy)
+    print(main.lx, main.ly)
+    print(main.all_points)
+    return jsonify(main.ans_points)
 
 @app.route('/sendInfo', methods = ['POST'])
 def sendInfo():
@@ -249,14 +249,12 @@ def sendInfo():
     height = val[1]
     ratio = val[2]
     ov_ratio = val[3];
-    global lx, ly
-    lx = (2 * height * tan(angle / 360 * 3.1415926))
-    ly = lx / ratio
-    lx *= (1 - ov_ratio)
-    ly *= (1 - ov_ratio)
-    print(lx, ly)
-    return jsonify(lx)
-    print(1, lx, ly)
+    main.lx = (2 * height * tan(angle / 360 * 3.1415926))
+    main.ly = main.lx / ratio
+    main.lx *= (1 - ov_ratio)
+    main.ly *= (1 - ov_ratio)
+    print(main.lx, main.ly)
+    return jsonify(main.lx)
 
 @app.route('/')
 @app.route('/index')
