@@ -18,6 +18,7 @@ function clearAll() {
         flightPlan.setMap(null);
     points = [];
     markers = [];
+    state = 2;
 }
 
 function clearShit() {
@@ -38,7 +39,9 @@ function sendInfo() {
     height = max(0, parseFloat(document.getElementById("height").value));
     ratio = max(0, parseFloat(document.getElementById("ratio").value));
     or = max(0, parseFloat(document.getElementById("overlapping").value));
-    if (!angle || !height || !ratio || !or ||  height > 500 || angle > 170 || or > 0.9) {
+    battery = max(0, parseFloat(document.getElementById("battery").value));
+    photo = max(0, parseFloat(document.getElementById("photo").value));
+    if (!angle || !height || !ratio || !or ||  !battery || !photo || height > 500 || angle > 170 || or > 0.9) {
         alert("Incorrect info!");
         return;
     }
@@ -57,6 +60,8 @@ function sendInfo() {
     val.push(height);
     val.push(ratio);
     val.push(or);
+    val.push(battery);
+    val.push(photo);
     var data = JSON.stringify(val);
     xhr.send(data);
     state = 1;
@@ -83,7 +88,9 @@ function sendData() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var path = JSON.parse(xhr.responseText);
+            var ddd = JSON.parse(xhr.responseText);
+            var path = ddd[0];
+            var can = ddd[1];
             console.log(path)
             console.log(points)
             if (path.length == 2) {
@@ -102,6 +109,8 @@ function sendData() {
                 strokeWeight: 2
             });
             flightPlan.setMap(map);
+            if (!can)
+                alert("You don't have enough power!!!((");
         }
     };
     var data = JSON.stringify(points);

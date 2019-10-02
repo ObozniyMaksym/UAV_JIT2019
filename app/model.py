@@ -129,6 +129,7 @@ class DroneAlgo:
                     b.append(self.all_points[i])
                 self.all_points = b.copy()
             t1 *= 0.99998
+        self.cur_ans = cur_ans
 
     #END OF TSP SOLUTION
 

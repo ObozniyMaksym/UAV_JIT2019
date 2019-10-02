@@ -6,6 +6,8 @@ from random import random, randint, shuffle
 import json
 from app.model import DroneAlgo
 
+battery = 0
+photo = 0
 main = DroneAlgo()
 
 '''
@@ -227,7 +229,6 @@ def go_to_ok():
 def makeHome():
     location = request.get_json()
     main.get_dps(location)
-    print(main.dpx, main.dpy)
     return jsonify(location)
 
 @app.route('/send', methods = ['POST'])
@@ -236,11 +237,15 @@ def send():
     print(main.points)
     main.get_distance()
     main.solve() 
-    
-    print(main.a, main.dpx, main.dpy)
-    print(main.lx, main.ly)
-    print(main.all_points)
-    return jsonify(main.ans_points)
+    can = 1
+    if main.cur_ans / 1000 * photo > battery:
+        can = 0
+    data = []
+    print(main.ans_points)
+    data.append(main.ans_points)
+    data.append(can)
+    print(data)
+    return jsonify(data)
 
 @app.route('/sendInfo', methods = ['POST'])
 def sendInfo():
@@ -248,12 +253,15 @@ def sendInfo():
     angle = val[0]
     height = val[1]
     ratio = val[2]
-    ov_ratio = val[3];
+    ov_ratio = val[3]
+    global battery
+    battery = val[4]
+    global photo 
+    photo = val[5]
     main.lx = (2 * height * tan(angle / 360 * 3.1415926))
     main.ly = main.lx / ratio
     main.lx *= (1 - ov_ratio)
     main.ly *= (1 - ov_ratio)
-    print(main.lx, main.ly)
     return jsonify(main.lx)
 
 @app.route('/')
