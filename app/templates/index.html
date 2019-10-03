@@ -8,10 +8,10 @@
         <div id = "panel">Проектирование полета дрона, для покрытия территории</div>
         <div id="map"></div>
         <div id = "buttons">
-            <button onClick='sendInfo()'>SEND NUDES</button>
-            <button onClick='sendData()'>SOLVE</button>
-            <button onClick='clearAll()'>CLEAR BORDER</button>
-            <button onClick='clearShit()'>CLEAR ALL</button>
+            <button id = "info" class = "active" onClick='sendInfo()'>SEND INFO</button>
+            <button id = "solve" class = "inactive" onClick='sendData()'>SOLVE</button>
+            <button id = "clear" class = "active" onClick='clearAll()'>CLEAR BORDER</button>
+            <button id = "clearAll" class = "active" onClick='clearShit()'>CLEAR ALL</button>
         </div>
         <div is = "inputs">
             <input type = "number" id = "angle" placeholder = "Angle of view, degrees"/>

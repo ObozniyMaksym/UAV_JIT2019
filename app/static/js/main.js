@@ -53,7 +53,9 @@ function sendInfo() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-         }
+            document.getElementById('solve').classList.remove('inactive');
+            document.getElementById('solve').classList.add('active'); 
+        }
     };
     var val = []
     val.push(angle);
@@ -65,7 +67,7 @@ function sendInfo() {
     var data = JSON.stringify(val);
     xhr.send(data);
     state = 1;
-    alert(state);
+    alert("Data succesfully sent!!");
 }
 
 function sendHomePoint(pos) {
