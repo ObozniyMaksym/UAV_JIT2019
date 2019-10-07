@@ -5,22 +5,68 @@
         <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js')}}"></script>
     </head>
     <body>
-        <div id = "panel">Проектирование полета дрона, для покрытия территории</div>
-        <div id="map"></div>
-        <div id = "buttons">
-            <button id = "info" class = "active" onClick='sendInfo()'>SEND INFO</button>
-            <button id = "solve" class = "inactive" onClick='sendData()'>SOLVE</button>
-            <button id = "clear" class = "active" onClick='clearAll()'>CLEAR BORDER</button>
-            <button id = "clearAll" class = "active" onClick='clearShit()'>CLEAR ALL</button>
-        </div>
-        <div is = "inputs">
-            <input type = "number" id = "angle" placeholder = "Angle of view, degrees"/>
-            <input type = "number" id = "height" placeholder = "Height, meters"/>
-            <input type = "number" id = "ratio" placeholder = "Aspect ratio"/>
-            <input type = "number" id = "overlapping" placeholder = "Overlapping ratio"/>
-            <input type = "number" id = "battery" placeholder = "Battery, mah">
-            <input type = "number" id = "photo" placeholder = "charge per 1km">
-        </div>
+        <div id = "panel" align="center"> Проектирование полета дрона для покрытия территории</div>
+		<table> 
+  <tr>  
+    <td width="75%" height="70%">
+      <div id="map" style="width:100%; height:90%"></div>
+    </td>
+	<td>
+	<div id = "buttons">
+            <table style="width: 100%">
+			<tr style="width: 100px"><td style="width: 100%"><button id = "info" class = "active" onClick='sendInfo()'>SEND INFO</button></td></tr>
+            <tr><td><button id = "solve" class = "inactive" onClick='sendData()'>SOLVE</button></td></tr>
+            <tr><td><button id = "clear" class = "active" onClick='clearAll()'>CLEAR BORDER</button></td></tr>
+            <tr><td><button id = "clearAll" class = "active" onClick='clearShit()'>CLEAR ALL</button></td></tr>
+			</table>
+      </div>
+	 </td>
+</tr>
+</table>
+<div class="page">
+  <label class="field a-field a-field_a1">
+    <input id = "angle" class="field__input a-field__input" placeholder="e.g. 140" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Angle</span>
+    </span>
+  </label>
+  <label class="field a-field a-field_a2">
+    <input id = "height" class="field__input a-field__input" placeholder="e.g. 100" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Height</span>
+    </span>
+  </label>    
+  <label class="field a-field a-field_a3">
+    <input id = "ratio" class="field__input a-field__input" placeholder="e.g. 1.1" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Image Ratio</span>
+    </span>
+  </label>
+</div>
+
+<div class="page">
+<label class="field a-field a-field_a1">
+    <input id = "overlapping" class="field__input a-field__input" placeholder="e.g. 0.1" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Overlapping Ratio</span>
+    </span>
+  </label>
+  <label class="field a-field a-field_a2">
+    <input id = "battery" class="field__input a-field__input" placeholder="e.g. 500" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Battery</span>
+    </span>
+  </label>
+  <label class="field a-field a-field_a3">
+    <input id = "photo" class="field__input a-field__input" placeholder="e.g. 30" required>
+    <span class="a-field__label-wrap">
+      <span class="a-field__label">Charge per 1 km</span>
+    </span>
+  </label> 
+	
+</div>
+
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBON6aGMLvVDk2GCBCM7AYGwfNti7fQVTs&callback=initMap"></script>
   </body>
