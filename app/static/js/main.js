@@ -45,8 +45,6 @@ function sendInfo() {
         alert("Incorrect info!");
         return;
     }
-    if (state != 0)
-        state = 0;
     var xhr = new XMLHttpRequest();
     var url = "/sendInfo";
     xhr.open("POST", url, true);
@@ -66,7 +64,8 @@ function sendInfo() {
     val.push(photo);
     var data = JSON.stringify(val);
     xhr.send(data);
-    state = 1;
+    if (state == 0)
+        state = 1;
     alert("Data succesfully sent!!");
 }
 
@@ -96,7 +95,7 @@ function sendData() {
             console.log(path)
             console.log(points)
             if (path.length == 2) {
-                alert("Incorrect input, you are a stupid son of a bitch");
+                alert("Incorrect input");
                 clearShit();
                 return;
             }
@@ -112,7 +111,7 @@ function sendData() {
             });
             flightPlan.setMap(map);
             if (!can)
-                alert("You don't have enough power!!!((");
+                alert("You don't have enough power!!!");
         }
     };
     var data = JSON.stringify(points);
