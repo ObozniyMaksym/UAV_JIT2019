@@ -5,59 +5,18 @@ from math import cos, sqrt, exp, tan
 from random import random, randint, shuffle
 import json
 
-class DroneAlgo:
-    base = {"lat": 0, "lng": 0}
-    zero = {"x": 0, "y": 0}
-    dpx = 1
-    dpy = 1
-    lx = 100
-    ly = 100
-    points = []
-    a = []
-    cur_ans = 0
-    ans_points = []
-    all_points = []
-
-    #GEOMETRY 
-
-    #Distance between 2 points
+class Geometry():
+        #Distance between 2 points
     def get_dist(self, a, b):
         return sqrt((a["x"] - b["x"]) * (a["x"] - b["x"]) + (a["y"] - b["y"]) * (a["y"] - b["y"]))
 
     #Oriented square of triangle
     def get_square(self, a, b, c):
         return (a["x"] - b["x"]) * (a["y"] + b["y"]) + (b["x"] - c["x"]) * (b["y"] + c["y"]) + (c["x"] - a["x"]) * (c["y"] + a["y"])
-
-    #Get dpx and dpy
-    def get_dps(self, location):
-        self.base = location
-        phi = self.base["lat"] / 180 * 3.1415926
-        self.dpx = 111.321*cos(phi) - 0.0094*cos(3*phi)
-        self.dpy = 111.143
-
-    #Transformation from lat/lng to cartesian coordinates
-    def get_distance(self):
-        self.a.clear()
-        for i in range(0, len(self.points)):
-            self.a.append({"x": (self.points[i]["lng"] - self.base["lng"])*self.dpx*1000, "y": (self.points[i]["lat"] - self.base["lat"])*self.dpy*1000, "id": i})
-
+    
     #Check do the segments intersect
     def intersection(self, a, b, c, d):
         if self.get_square(a, c, b) * self.get_square(a, d, b) < 0 and self.get_square(c, a, d) * self.get_square(c, b, d) < 0:
-            return 1
-        return 0
-
-    #Check is the point inside the border
-    def is_in(self, x, y):
-        p = {"x": x, "y": y}
-        q = {"x": 1000000000, "y": 970005041}
-        kol = 0
-        for i in range(0, len(self.a) - 1):
-            if self.intersection(p, q, self.a[i], self.a[i + 1]) == 1:
-                kol = kol + 1
-        if self.intersection(p, q, self.a[0], self.a[-1]) == 1:
-            kol = kol + 1
-        if kol % 2 == 1:
             return 1
         return 0
 
@@ -71,7 +30,49 @@ class DroneAlgo:
         if self.intersection(p, q, self.a[0], self.a[-1]) == 1:
             return 1
         return 0
-        
+    
+class DroneThirdAlgo(Geometry):
+    base = {"lat": 0, "lng": 0}
+    zero = {"x": 0, "y": 0}
+    dpx = 1
+    dpy = 1
+    lx = 100
+    ly = 100
+    points = []
+    a = []
+    cur_ans = 0
+    ans_points = []
+    all_points = []
+
+    #GEOMETRY 
+    #Get dpx and dpy
+    def get_dps(self, location):
+        self.base = location
+        phi = self.base["lat"] / 180 * 3.1415926
+        self.dpx = 111.321*cos(phi) - 0.0094*cos(3*phi)
+        self.dpy = 111.143
+
+    #Transformation from lat/lng to cartesian coordinates
+    def get_distance(self):
+        self.a.clear()
+        for i in range(0, len(self.points)):
+            self.a.append({"x": (self.points[i]["lng"] - self.base["lng"])*self.dpx*1000, "y": (self.points[i]["lat"] - self.base["lat"])*self.dpy*1000, "id": i})
+
+    
+    #Check is the point inside the border
+    def is_in(self, x, y):
+        p = {"x": x, "y": y}
+        q = {"x": 1000000000, "y": 970005041}
+        kol = 0
+        for i in range(0, len(self.a) - 1):
+            if self.intersection(p, q, self.a[i], self.a[i + 1]) == 1:
+                kol = kol + 1
+        if self.intersection(p, q, self.a[0], self.a[-1]) == 1:
+            kol = kol + 1
+        if kol % 2 == 1:
+            return 1
+        return 0
+    
     #Check do we need the square lx * ly with left-down in (x, y)
     def good_square(self, x, y):
         if self.is_in(x, y) == 1 or self.is_in(x + self.lx, y) == 1 or self.is_in(x + self.lx, y + self.ly) == 1 or self.is_in(x, y + self.ly) == 1:

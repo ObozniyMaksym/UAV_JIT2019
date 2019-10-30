@@ -3,6 +3,8 @@
     <head>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
         <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js')}}"></script>
+        <script type = "text/javascript" src = "{{ url_for('static', filename='js/map.js')}}"></script>
+        <script type = "text/javascript" src = "{{ url_for('static', filename='js/buttons.js')}}"></script>
     </head>
     <body>
         <div id = "panel" align="center"> Проектирование полета дрона для покрытия территории</div>
@@ -18,7 +20,7 @@
             <tr><td><button id = "solve" class = "inactive" onClick='sendData()'>SOLVE</button></td></tr>
             <tr><td><button id = "clear" class = "active" onClick='clearAll()'>CLEAR BORDER</button></td></tr>
             <tr><td><button id = "clearAll" class = "active" onClick='clearShit()'>CLEAR ALL</button></td></tr>
-			</table>
+            </table>
       </div>
 	 </td>
 </tr>
