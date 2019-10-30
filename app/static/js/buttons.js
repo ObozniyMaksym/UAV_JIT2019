@@ -17,23 +17,28 @@ function clearShit() {
     state = 1;
 }
 
-function max(a, b) {
-    if (a > b)
-        return a;
-    return b;
-}
-
 function sendInfo() {
-    angle = max(0, parseFloat(document.getElementById("angle").value));
-    height = max(0, parseFloat(document.getElementById("height").value));
-    ratio = max(0, parseFloat(document.getElementById("ratio").value));
-    or = max(0, parseFloat(document.getElementById("overlapping").value));
-    battery = max(0, parseFloat(document.getElementById("battery").value));
-    photo = max(0, parseFloat(document.getElementById("photo").value));
-    if (!angle || !height || !ratio || !or ||  !battery || !photo || height > 500 || angle > 170 || or > 0.9) {
+    angle = max(111, parseFloat(document.getElementById("angle").value));
+    height = max(70, parseFloat(document.getElementById("height").value));
+    ratio = max(1, parseFloat(document.getElementById("ratio").value));
+    overlapping = max(0.1, parseFloat(document.getElementById("overlapping").value));
+    maxTime = max(1000000000, parseFloat(document.getElementById("maxTime").value));
+    speed = max(25, parseFloat(document.getElementById("speed").value));
+    angular = max(120, parseFloat(document.getElementById("angular").value));
+    angle = 111;
+    height = 70;
+    ratio = 1;
+    overlapping = 0.1;
+    maxTime = 11111111;
+    speed = 111;
+    angular = 120;
+    drone = {angle: angle, height: height, ratio: ratio, overlapping: overlapping, maxTime: maxTime, speed: speed, angular: angular};
+    console.log(drone);
+    if (!angle || !height || !ratio || !overlapping  || !maxTime || height > 500 || angle > 170 || overlapping > 0.9 || !angular) {
         alert("Incorrect info!");
         return;
     }
+    console.log(drone);
     var xhr = new XMLHttpRequest();
     var url = "/sendInfo";
     xhr.open("POST", url, true);
@@ -44,14 +49,7 @@ function sendInfo() {
             document.getElementById('solve').classList.add('active'); 
         }
     };
-    var val = []
-    val.push(angle);
-    val.push(height);
-    val.push(ratio);
-    val.push(or);
-    val.push(battery);
-    val.push(photo);
-    var data = JSON.stringify(val);
+    var data = JSON.stringify(drone);
     xhr.send(data);
     if (state == 0)
         state = 1;
@@ -78,31 +76,27 @@ function sendData() {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var ddd = JSON.parse(xhr.responseText);
-            path = ddd[0];
-            var can = ddd[1];
-            console.log(path)
-            console.log(points)
-            if (path.length == 2) {
-                alert("Incorrect input");
-                clearShit();
-                return;
-            }
+            var result = JSON.parse(xhr.responseText);
+            console.log(result);
             if (flightPlan) {
                 flightPlan.setMap(null);
             }
+            
             flightPlan = new google.maps.Polyline({
-                path: path,
+                path: result.path,
                 geodesic: true,
                 strokeColor: '#00FF00',
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });
+            console.log(result.path);
             flightPlan.setMap(map);
-            if (!can)
+            console.log(result["height"])
+            if (!result.ok)
                 alert("You don't have enough power!!!");
         }
     };
+    console.log(points);
     var data = JSON.stringify(points);
     xhr.send(data);
 }
