@@ -13,27 +13,48 @@ import math
 battery = 0
 photo = 0
 main = Construct()
-
+drone = 0
+location = 0
 
 @app.route('/sendHomePosition', methods = ['POST'])
 def makeHome():
+    global location
     location = request.get_json()
-    main.get_dps(location)
     return jsonify(location)
 
-@app.route('/send', methods = ['POST'])
-def send():
+
+@app.route('/sendDroneAlgo', methods = ['POST'])
+def sendDroneAlgo():
+    global main
+    main = DroneAlgo()
+    main.get_dps(location)
+    
+    main.setDrone(drone);
+    main.initialize();
+    print(main.lx)
     main.points = request.get_json()
-    main.nn = len(main.points)
+    main.solve() 
+    print(main.lx, main.ly)
+    return jsonify(main.result)
+
+@app.route('/sendConstructive', methods = ['POST'])
+def sendConstructive():
+    global main
+    main = Construct()
+    main.get_dps(location)
+    
+    main.setDrone(drone);
+    main.initialize();
+    main.points = request.get_json()
+    #main.nn = len(main.points)
     main.solve() 
     return jsonify(main.result)
 
 @app.route('/sendInfo', methods = ['POST'])
 def sendInfo():
+    global drone
     drone = request.get_json()
-    main.setDrone(drone);
-    main.initialize();
-    return jsonify(main.lx)
+    return jsonify(drone)
 
 @app.route('/')
 @app.route('/index')
