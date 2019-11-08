@@ -34,7 +34,6 @@ function stop() {
 
 function sendInfo() {
     id = document.getElementById("drone").selectedIndex;
-    id = 1
     var angle = 0, height = 0, ratio = 1, overlapping = 0.1, maxTime = 0, speed = 1, angular = 70
     if (id != 0) {
         id--;
@@ -47,7 +46,6 @@ function sendInfo() {
         battery = drones[id].battery;
         perkm = drones[id].perkm; 
     }
-    console.log(angle_x)
     if (parseFloat(document.getElementById("angle").value) && parseFloat(document.getElementById("angle").value) > 0) {
         angle_x = parseFloat(document.getElementById("angle").value);
     }
